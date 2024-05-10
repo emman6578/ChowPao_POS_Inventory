@@ -10,6 +10,25 @@ export const addProduct = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const product: ProductInterface = req.body;
 
+    const categories = await Promise.all(
+      product.Category.map(async (category) => {
+        const existingCategory = await prisma.category.findFirst({
+          where: {
+            name: category.name,
+          },
+        });
+        if (existingCategory) {
+          return existingCategory;
+        } else {
+          return prisma.category.create({
+            data: {
+              name: category.name,
+            },
+          });
+        }
+      })
+    );
+
     const createProduct = await prisma.product.create({
       data: {
         barcode: product.barcode,
@@ -23,9 +42,7 @@ export const addProduct = expressAsyncHandler(
             }
           : undefined,
         Category: {
-          create: product.Category.map((category) => ({
-            name: category.name,
-          })),
+          connect: categories,
         },
         supplier: product.supplier,
         condition: product.condition,
@@ -49,5 +66,26 @@ export const addProduct = expressAsyncHandler(
 );
 
 export const getProducts = expressAsyncHandler(
-  async (req: Request, res: Response) => {}
+  async (req: Request, res: Response) => {
+    const allProducts = await prisma.product.findMany({
+      include: {
+        Product_Info: {
+          select: {
+            name: true,
+          },
+        },
+        Category: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!allProducts) {
+      throw new Error("Error Getting all Products");
+    }
+
+    successHandler(allProducts, res);
+  }
 );

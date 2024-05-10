@@ -55,7 +55,7 @@ enum Role {
 
 model Product {
   id                  String        @id @default(uuid())
-  barcode             String
+  barcode             String //must be unique
   Product_Info        Product_Info?
   Category            Category[]
   supplier            String
@@ -85,12 +85,11 @@ model Product_Info {
 
 model Category {
   id   String @id @default(uuid())
-  name String
+  name String @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   //relationships
-  Product    Product @relation(fields: [product_id], references: [id])
-  product_id String
+  Product Product[]
 }
