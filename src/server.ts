@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 
 //route import
 import AuthRoutes from "./Routes/AuthRoutes";
@@ -18,6 +19,7 @@ dotenv.config();
 const PORT = process.env.PORT;
 
 //middlewares
+server.use(cors());
 server.use(express.json());
 
 //initial route
