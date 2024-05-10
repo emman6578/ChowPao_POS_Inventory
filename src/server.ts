@@ -24,7 +24,7 @@ server.use(express.json());
 
 //initial route
 server.get("/", (req, res) => {
-  throw new Error("Hello world");
+  res.json({ message: "Welcome to Chow Pao POS Inventory System" });
 });
 
 server.use("/api/auth", AuthRoutes);
