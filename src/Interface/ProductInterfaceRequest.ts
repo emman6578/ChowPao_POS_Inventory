@@ -1,5 +1,4 @@
 export interface ProductInterface {
-  id?: string;
   barcode: string;
   Product_Info?: ProductInfo | null;
   Category: Category[];
@@ -11,14 +10,12 @@ export interface ProductInterface {
   description: string;
 }
 
-interface ProductInfo {
-  id?: string;
+export interface ProductInfo {
   name: string;
   quantity: number;
   price: number;
 }
 
-interface Category {
-  id?: string;
+export interface Category {
   name: string;
 }

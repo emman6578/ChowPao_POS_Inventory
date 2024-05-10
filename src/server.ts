@@ -22,7 +22,7 @@ server.use(express.json());
 
 //initial route
 server.get("/", (req, res) => {
-  throw new Error("test");
+  throw new Error("Hello world");
 });
 
 server.use("/api/auth", AuthRoutes);
