@@ -1,6 +1,10 @@
 import { Router } from "express";
 
-import { authenticateToken } from "../Middleware/authMiddleware";
+import {
+  authenticateToken,
+  isAdmin,
+  isDriver,
+} from "../Middleware/authMiddleware";
 import {
   addProduct,
   deleteProduct,
@@ -13,16 +17,21 @@ import {
 const router = Router();
 
 //Inventory Routes
-router.get("/", authenticateToken, getProducts);
-router.get("/:id", authenticateToken, getProduct);
+router.get("/", authenticateToken, isAdmin, getProducts);
+router.get("/:id", authenticateToken, isAdmin, getProduct);
 
-router.post("/create", authenticateToken, addProduct);
+router.post("/create", authenticateToken, isAdmin, addProduct);
 
 //update product info
-router.put("/info/:id", authenticateToken, updateProductInfo);
+router.put("/info/:id", authenticateToken, isAdmin, updateProductInfo);
 //update product in inventory
-router.put("/inventory/:id", authenticateToken, updateProductInventory);
+router.put(
+  "/inventory/:id",
+  authenticateToken,
+  isAdmin,
+  updateProductInventory
+);
 
-router.delete("/:id", authenticateToken, deleteProduct);
+router.delete("/:id", authenticateToken, isAdmin, deleteProduct);
 
 export default router;

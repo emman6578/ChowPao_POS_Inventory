@@ -32,9 +32,42 @@ export const authenticateToken = expressAsyncHandler(
       }
 
       req.user = dbToken?.user;
+      console.log(req.user);
     } catch (error) {
       throw new Error("Unathorized");
     }
     next();
+  }
+);
+
+export const isAdmin = expressAsyncHandler(
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    const userEmail = req.user?.email;
+
+    const adminUser = await prisma.user.findUnique({
+      where: { email: userEmail },
+    });
+
+    if (adminUser!.role !== "ADMIN") {
+      throw new Error("You are not a admin");
+    } else {
+      next();
+    }
+  }
+);
+
+export const isDriver = expressAsyncHandler(
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    const userEmail = req.user?.email;
+
+    const adminUser = await prisma.user.findUnique({
+      where: { email: userEmail },
+    });
+
+    if (adminUser!.role !== "DRIVER") {
+      throw new Error("You are not a driver");
+    } else {
+      next();
+    }
   }
 );
