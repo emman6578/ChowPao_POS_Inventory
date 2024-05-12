@@ -9,8 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  // provider = "mysql"
+  // provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -56,7 +56,7 @@ enum Role {
 
 model Product {
   id                  String        @id @default(uuid())
-  barcode             String //must be unique
+  barcode             String        @unique
   Product_Info        Product_Info?
   Category            Category[]
   supplier            String

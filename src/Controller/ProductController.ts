@@ -6,16 +6,28 @@ import {
   ProductInterface,
 } from "../Interface/ProductInterfaceRequest";
 import expressAsyncHandler from "express-async-handler";
+import {
+  checkRequiredFields,
+  checkRequiredFieldsProductInventory,
+  checkRequiredFieldsProductInfo,
+} from "../Helpers/ProductHelpers/validateCheckRequiredFields";
 
 const prisma = new PrismaClient();
 
 export const addProduct = expressAsyncHandler(
   async (req: Request, res: Response) => {
+    checkRequiredFields(req);
     const product: ProductInterface = req.body;
+
+    if (
+      await prisma.product.findUnique({ where: { barcode: product.barcode } })
+    ) {
+      throw new Error("Barcode must be unique");
+    }
 
     const categories = await Promise.all(
       product.Category.map(async (category) => {
-        const existingCategory = await prisma.category.findFirst({
+        const existingCategory = await prisma.category.findUnique({
           where: {
             name: category.name,
           },
@@ -117,6 +129,7 @@ export const getProduct = expressAsyncHandler(
 
 export const updateProductInfo = expressAsyncHandler(
   async (req: Request, res: Response) => {
+    checkRequiredFieldsProductInfo(req);
     const { id } = req.params;
     const product: ProductInfo = req.body;
 
@@ -149,6 +162,7 @@ export const updateProductInfo = expressAsyncHandler(
 
 export const updateProductInventory = expressAsyncHandler(
   async (req: Request, res: Response) => {
+    checkRequiredFieldsProductInventory(req);
     const { id } = req.params;
     const product: ProductInterface = req.body;
 

@@ -13,14 +13,16 @@ import {
 const router = Router();
 
 //Inventory Routes
-router.get("/", getProducts);
-router.get("/:id", getProduct);
+router.get("/", authenticateToken, getProducts);
+router.get("/:id", authenticateToken, getProduct);
 
-router.post("/create", addProduct);
+router.post("/create", authenticateToken, addProduct);
 
-router.put("/info/:id", updateProductInfo);
-router.put("/inventory/:id", updateProductInventory);
+//update product info
+router.put("/info/:id", authenticateToken, updateProductInfo);
+//update product in inventory
+router.put("/inventory/:id", authenticateToken, updateProductInventory);
 
-router.delete("/:id", deleteProduct);
+router.delete("/:id", authenticateToken, deleteProduct);
 
 export default router;
