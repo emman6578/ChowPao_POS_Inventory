@@ -27,6 +27,7 @@ model User {
   updated DateTime @updatedAt
 
   Token Token[]
+  Cart  Cart?
 }
 
 model Token {
@@ -54,22 +55,6 @@ enum Role {
   DRIVER
 }
 
-model Product {
-  id                  String        @id @default(uuid())
-  barcode             String        @unique
-  Product_Info        Product_Info?
-  Category            Category[]
-  supplier            String
-  condition           String
-  status              String
-  minimum_stock_level Int
-  maximum_stock_level Int
-  description         String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model Product_Info {
   id       String @id @default(uuid())
   name     String
@@ -93,4 +78,68 @@ model Category {
 
   //relationships
   Product Product[]
+}
+
+model Product {
+  id                  String        @id @default(uuid())
+  barcode             String        @unique
+  Product_Info        Product_Info?
+  Category            Category[]
+  supplier            String
+  condition           String
+  status              String
+  minimum_stock_level Int
+  maximum_stock_level Int
+  description         String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ProductInCart ProductInCart[]
+}
+
+model Cart {
+  id String @id @default(uuid())
+
+  ProductInCart    ProductInCart[]
+  total_price      Float?
+  status           Status?
+  payment_status   PaymentStatus?
+  shipping_address String?
+  discounts        Float?
+
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductInCart {
+  id String @id @default(uuid())
+
+  product    Product @relation(fields: [product_id], references: [id])
+  product_id String
+
+  quantity Int
+
+  cart    Cart   @relation(fields: [cart_id], references: [id])
+  cart_id String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([product_id, cart_id])
+}
+
+enum Status {
+  ACTIVE
+  COMPLETED
+  ABANDONED
+}
+
+enum PaymentStatus {
+  PAID
+  UNPAID
+  PROCESSING
 }

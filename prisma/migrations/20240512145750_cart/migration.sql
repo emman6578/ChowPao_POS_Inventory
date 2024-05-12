@@ -30,23 +30,6 @@ CREATE TABLE `Token` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Product` (
-    `id` VARCHAR(191) NOT NULL,
-    `barcode` VARCHAR(191) NOT NULL,
-    `supplier` VARCHAR(191) NOT NULL,
-    `condition` VARCHAR(191) NOT NULL,
-    `status` VARCHAR(191) NOT NULL,
-    `minimum_stock_level` INTEGER NOT NULL,
-    `maximum_stock_level` INTEGER NOT NULL,
-    `description` VARCHAR(191) NOT NULL,
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
-
-    UNIQUE INDEX `Product_barcode_key`(`barcode`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `Product_Info` (
     `id` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
@@ -72,6 +55,52 @@ CREATE TABLE `Category` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `Product` (
+    `id` VARCHAR(191) NOT NULL,
+    `barcode` VARCHAR(191) NOT NULL,
+    `supplier` VARCHAR(191) NOT NULL,
+    `condition` VARCHAR(191) NOT NULL,
+    `status` VARCHAR(191) NOT NULL,
+    `minimum_stock_level` INTEGER NOT NULL,
+    `maximum_stock_level` INTEGER NOT NULL,
+    `description` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `Product_barcode_key`(`barcode`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Cart` (
+    `id` VARCHAR(191) NOT NULL,
+    `total_price` DOUBLE NULL,
+    `status` ENUM('ACTIVE', 'COMPLETED', 'ABANDONED') NULL,
+    `payment_status` ENUM('PAID', 'UNPAID', 'PROCESSING') NULL,
+    `shipping_address` VARCHAR(191) NULL,
+    `discounts` DOUBLE NULL,
+    `user_id` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `Cart_user_id_key`(`user_id`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `ProductInCart` (
+    `id` VARCHAR(191) NOT NULL,
+    `product_id` VARCHAR(191) NOT NULL,
+    `quantity` INTEGER NOT NULL,
+    `cart_id` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `ProductInCart_product_id_cart_id_key`(`product_id`, `cart_id`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `_CategoryToProduct` (
     `A` VARCHAR(191) NOT NULL,
     `B` VARCHAR(191) NOT NULL,
@@ -85,6 +114,15 @@ ALTER TABLE `Token` ADD CONSTRAINT `Token_user_id_fkey` FOREIGN KEY (`user_id`) 
 
 -- AddForeignKey
 ALTER TABLE `Product_Info` ADD CONSTRAINT `Product_Info_product_id_fkey` FOREIGN KEY (`product_id`) REFERENCES `Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Cart` ADD CONSTRAINT `Cart_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ProductInCart` ADD CONSTRAINT `ProductInCart_product_id_fkey` FOREIGN KEY (`product_id`) REFERENCES `Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ProductInCart` ADD CONSTRAINT `ProductInCart_cart_id_fkey` FOREIGN KEY (`cart_id`) REFERENCES `Cart`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_CategoryToProduct` ADD CONSTRAINT `_CategoryToProduct_A_fkey` FOREIGN KEY (`A`) REFERENCES `Category`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

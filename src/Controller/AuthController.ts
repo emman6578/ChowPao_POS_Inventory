@@ -22,10 +22,27 @@ export const register = expressAsyncHandler(
         username: user.username,
         role: user.role,
       },
+      include: {
+        Cart: true,
+      },
     });
 
     if (!createUser) {
       throw new Error("Error creating user");
+    }
+
+    const cart = await prisma.cart.create({
+      data: {
+        user: {
+          connect: {
+            id: createUser.id,
+          },
+        },
+      },
+    });
+
+    if (!cart) {
+      throw new Error("Error creating user's cart");
     }
 
     res.json(createUser);

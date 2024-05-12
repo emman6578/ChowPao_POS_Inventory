@@ -6,6 +6,7 @@ import cors from "cors";
 import AuthRoutes from "./Routes/AuthRoutes";
 import UserRoutes from "./Routes/UserRoutes";
 import ProductRoutes from "./Routes/ProductRoutes";
+import CartRoutes from "./Routes/CartRoutes";
 
 //error handler midddlewares
 import {
@@ -30,6 +31,7 @@ server.get("/", (req, res) => {
 server.use("/api/auth", AuthRoutes);
 server.use("/api/user", UserRoutes);
 server.use("/api/product", ProductRoutes);
+server.use("/api/cart", CartRoutes);
 
 //error handler middleware
 server.use(notFound);

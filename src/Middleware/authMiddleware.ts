@@ -6,7 +6,9 @@ import expressAsyncHandler from "express-async-handler";
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET;
 
-type AuthRequest = Request & { user?: User };
+export interface AuthRequest extends Request {
+  user?: User;
+}
 
 export const authenticateToken = expressAsyncHandler(
   async (req: AuthRequest, res: Response, next: NextFunction) => {
