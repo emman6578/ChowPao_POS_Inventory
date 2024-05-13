@@ -101,12 +101,10 @@ model Product {
 model Cart {
   id String @id @default(uuid())
 
-  ProductInCart    ProductInCart[]
-  total_price      Float?
-  status           Status?
-  payment_status   PaymentStatus?
-  shipping_address String?
-  discounts        Float?
+  ProductInCart  ProductInCart[]
+  total_price    Float?
+  status         Status?
+  payment_status PaymentStatus?
 
   user    User   @relation(fields: [user_id], references: [id])
   user_id String @unique

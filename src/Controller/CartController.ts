@@ -61,6 +61,45 @@ export const add = expressAsyncHandler(
       }
     }
 
+    // Calculate total price of products in the cart
+    const cartId = userCart.Cart?.id;
+    const cartProducts = await prisma.productInCart.findMany({
+      where: {
+        cart_id: cartId,
+      },
+      include: {
+        product: {
+          select: {
+            Product_Info: true,
+          },
+        },
+      },
+    });
+
+    if (!cartProducts) {
+      throw new Error("Cart Products failed to find");
+    }
+
+    let totalPrice = 0;
+    for (const cartProduct of cartProducts) {
+      totalPrice +=
+        cartProduct.quantity * cartProduct.product.Product_Info!.price;
+    }
+
+    try {
+      // Update cart
+      await prisma.cart.update({
+        where: { id: cartId },
+        data: {
+          total_price: totalPrice,
+          status: "ACTIVE",
+          payment_status: "UNPAID",
+        },
+      });
+    } catch (error) {
+      throw new Error(`${error}`);
+    }
+
     successHandler("Product added successfully", res);
   }
 );
