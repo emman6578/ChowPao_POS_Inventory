@@ -141,3 +141,8 @@ enum PaymentStatus {
   UNPAID
   PROCESSING
 }
+
+model Order {
+  id          String @id @default(uuid())
+  ordernumber String
+}

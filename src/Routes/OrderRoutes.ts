@@ -1,12 +1,10 @@
 import { Router } from "express";
 
 import { authenticateToken } from "../Middleware/authMiddleware";
+import { order } from "../Controller/OrderController";
 
 const router = Router();
 
-//router.get
-//router.get
-//router.put
-//router.delete
+router.get("/orders", order);
 
 export default router;

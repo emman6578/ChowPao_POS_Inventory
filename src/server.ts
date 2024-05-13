@@ -7,6 +7,7 @@ import AuthRoutes from "./Routes/AuthRoutes";
 import UserRoutes from "./Routes/UserRoutes";
 import ProductRoutes from "./Routes/ProductRoutes";
 import CartRoutes from "./Routes/CartRoutes";
+import OrderRoutes from "./Routes/OrderRoutes";
 
 //error handler midddlewares
 import {
@@ -32,6 +33,7 @@ server.use("/api/auth", AuthRoutes);
 server.use("/api/user", UserRoutes);
 server.use("/api/product", ProductRoutes);
 server.use("/api/cart", CartRoutes);
+server.use("api/orders", OrderRoutes);
 
 //error handler middleware
 server.use(notFound);
