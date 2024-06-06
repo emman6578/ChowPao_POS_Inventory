@@ -34,7 +34,6 @@ export const authenticateToken = expressAsyncHandler(
       }
 
       req.user = dbToken?.user;
-      console.log(req.user);
     } catch (error) {
       throw new Error("Unathorized");
     }

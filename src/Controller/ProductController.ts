@@ -210,8 +210,6 @@ export const deleteProduct = expressAsyncHandler(
         },
       });
 
-      // throw new Error(`Error Getting One Product`);
-
       successHandler(`Successfully deleted product: ${id}`, res);
     } catch (error) {
       throw new Error("Deleting product failed");

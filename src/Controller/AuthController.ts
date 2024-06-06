@@ -9,7 +9,7 @@ import { UserInterface } from "../Interface/UserInterfaceRequest";
 
 const prisma = new PrismaClient();
 const EMAIL_TOKEN_EXPIRATION_MINUTES = 10;
-const API_TOKEN_EXPIRATION_HOURS = 12;
+const API_TOKEN_EXPIRATION_HOURS = 360;
 
 export const register = expressAsyncHandler(
   async (req: Request, res: Response) => {

@@ -26,8 +26,13 @@ model User {
   created DateTime @default(now())
   updated DateTime @updatedAt
 
-  Token Token[]
-  Cart  Cart?
+  Token                    Token[]
+  Cart                     Cart?
+  Order                    Order[]
+  Delivery                 Delivery[]
+  RemainingProductDelivery RemainingProductDelivery[]
+  DriverProductSold        DriverProductSold[]
+  DriverProductInventory   DriverProductInventory[]
 }
 
 model Token {
@@ -39,20 +44,10 @@ model Token {
   expiration DateTime
 
   user_id String
-  user    User   @relation(fields: [user_id], references: [id])
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   created DateTime @default(now())
   updated DateTime @updatedAt
-}
-
-enum Type {
-  EMAIL
-  API
-}
-
-enum Role {
-  ADMIN
-  DRIVER
 }
 
 model Product_Info {
@@ -65,7 +60,7 @@ model Product_Info {
   updatedAt DateTime @updatedAt
 
   //relationships
-  Products   Product @relation(fields: [product_id], references: [id])
+  Products   Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
   product_id String  @unique
 }
 
@@ -96,17 +91,22 @@ model Product {
   updatedAt DateTime @updatedAt
 
   ProductInCart ProductInCart[]
+
+  Order                    Order[]
+  RemainingProductDelivery RemainingProductDelivery[]
+  DriverProductSold        DriverProductSold[]
+  DeliveryProducts         DeliveryProducts[]
+
+  DriverProductInventory DriverProductInventory[]
 }
 
 model Cart {
   id String @id @default(uuid())
 
-  ProductInCart  ProductInCart[]
-  total_price    Float?
-  status         Status?
-  payment_status PaymentStatus?
+  ProductInCart ProductInCart[]
+  total_price   Float?
 
-  user    User   @relation(fields: [user_id], references: [id])
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id String @unique
 
   createdAt DateTime @default(now())
@@ -116,18 +116,109 @@ model Cart {
 model ProductInCart {
   id String @id @default(uuid())
 
-  product    Product @relation(fields: [product_id], references: [id])
+  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
   product_id String
 
   quantity Int
+  total    Float
+  status   Status?
 
-  cart    Cart   @relation(fields: [cart_id], references: [id])
+  cart    Cart   @relation(fields: [cart_id], references: [id], onDelete: Cascade)
   cart_id String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([product_id, cart_id])
+}
+
+model Order {
+  id String @id @default(uuid())
+
+  total          Float //base on the product get in the product in cart calculate the total order
+  payment_status PaymentStatus?
+  quantity       Int //this quntatity is getting from the ProductinCart
+  status         Status? //also for status fetch first the product in cart to get the status
+  address        String
+
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id String
+
+  product Product[] //to get the product id first fetch the productin cart find the id of the product inside it
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Delivery {
+  id String @id @default(uuid())
+
+  driver    User   @relation(fields: [driver_id], references: [id], onDelete: Cascade)
+  driver_id String
+
+  Products                DeliveryProducts[]
+  total_delivery_quantity Int?
+  total_delivery_price    Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DeliveryProducts {
+  id String @id @default(uuid())
+
+  product  Product[]
+  quantity Int
+  total    Float
+
+  status   DeliveryStatus @default(PENDING)
+  approval Approval       @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Delivery   Delivery? @relation(fields: [deliveryId], references: [id])
+  deliveryId String?
+}
+
+model DriverProductInventory {
+  id String @id @default(uuid())
+
+  driver    User   @relation(fields: [driver_id], references: [id], onDelete: Cascade)
+  driver_id String
+
+  Product Product[]
+}
+
+model DriverProductSold {
+  id String @id @default(uuid())
+
+  driver      User[]
+  product     Product[]
+  total_sales Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RemainingProductDelivery {
+  id String @id @default(uuid())
+
+  driver  User[]
+  product Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Type {
+  EMAIL
+  API
+}
+
+enum Role {
+  ADMIN
+  DRIVER
 }
 
 enum Status {
@@ -142,7 +233,15 @@ enum PaymentStatus {
   PROCESSING
 }
 
-model Order {
-  id          String @id @default(uuid())
-  ordernumber String
+enum DeliveryStatus {
+  PENDING
+  IN_TRANSIT
+  DELIVERED
+  FAILED
+}
+
+enum Approval {
+  PENDING
+  DISAPPROVED
+  APPROVED
 }

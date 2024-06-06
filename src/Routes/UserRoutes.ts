@@ -1,12 +1,18 @@
 import { Router } from "express";
 
-import { authenticateToken } from "../Middleware/authMiddleware";
+import { authenticateToken, isAdmin } from "../Middleware/authMiddleware";
+import {
+  getUsers,
+  addToDelivery,
+  getDelivery,
+} from "../Controller/UserController";
 
 const router = Router();
 
-//router.get
-//router.get
-//router.put
-//router.delete
+router.get("/", authenticateToken, getUsers);
+
+router.post("/delivery", authenticateToken, isAdmin, addToDelivery);
+
+router.get("/delivery", authenticateToken, isAdmin, getDelivery);
 
 export default router;
